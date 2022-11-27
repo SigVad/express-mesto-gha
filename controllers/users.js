@@ -14,10 +14,9 @@ const getUsers = (req, res) => {
     });
 };
 
-
 // орфейл
 const getUserById = (req, res) => {
-  User.findById(req.params.userId, { new: true, runValidators: true })
+  User.findById(req.params.userId, { runValidators: true })
     // .orFail(() => {
     //   console.log('orFail');
     //   console.log(res.statusCode);
@@ -30,7 +29,6 @@ const getUserById = (req, res) => {
     })
     .catch((err) => {
       console.log(err.name);
-      console.log(err);
       if (err.name === 'ValidationError') {
         res.status(VALID_ERR_CODE).send({
           message:
@@ -65,21 +63,42 @@ const createUser = (req, res) => {
     });
 };
 // орФейл ловит, если не найден ValidationError и DefaulError нужны
+
+// if (err.name === 'CastError') {
+//   res.status(400).send({ message: 'Передан невалидный id пользователя' });
+// } else if (err.statusCode === 404) {
+//   res.status(404).send({ message: err.message });
+// } else {
+//   res.status(500).send({ message: 'Произошла ошибка' });
+// }
+
+// if (err.name === 'ValidationError') {
+//   res.status(VALID_ERR_CODE).send({
+// message: 'Переданы некорректные данные при обновлении профиля' });
+//   return;
+// }
+// if (res.statusCode === 404) {
+//   res.status(CAST_ERR_CODE).send({ message: 'Пользователь по указанному _id не найден' });
+//   return;
+// }
+// res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
+
 const patchUser = (req, res) => {
   const { user: { _id }, body } = req;
   User.findByIdAndUpdate(_id, body, { new: true, runValidators: true })
     .orFail(() => {
-      res.status(CAST_ERR_CODE);
-      throw new Error('Пользователь по указанному _id не найден');
+      const error = new Error('Пользователь по указанному _id не найден');
+      error.status(CAST_ERR_CODE);
+      throw error;
     })
     .then((user) => res.send({ user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(VALID_ERR_CODE).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+      if (err.name === 'CastError') {
+        res.status(CAST_ERR_CODE).send({ message: 'Пользователь по указанному _id не найден' });
         return;
       }
-      if (res.statusCode === 404) {
-        res.status(CAST_ERR_CODE).send({ message: 'Пользователь по указанному _id не найден' });
+      if (err.statusCode === 404) {
+        res.status(VALID_ERR_CODE).send({ message: 'Переданы некорректные данные при обновлении профиля' });
         return;
       }
       res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
