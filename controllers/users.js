@@ -13,17 +13,31 @@ const getUsers = (req, res) => {
       res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
     });
 };
+
+
 // орфейл
 const getUserById = (req, res) => {
-  User.findById(req.params.userId)
-    .orFail(() => {
-      throw new Error('Пользователь по указанному _id не найден');
-    })
+  User.findById(req.params.userId, { new: true, runValidators: true })
+    // .orFail(() => {
+    //   console.log('orFail');
+    //   console.log(res.statusCode);
+    //   res.status(CAST_ERR_CODE);
+    //   console.log(res.statusCode);
+    //   throw new Error('Пользователь по указанному _id не найден');
+    // })
     .then((user) => {
       res.send({ user });
     })
     .catch((err) => {
+      console.log(err.name);
       console.log(err);
+      if (err.name === 'ValidationError') {
+        res.status(VALID_ERR_CODE).send({
+          message:
+          'Переданы некорректные данные при создании пользователя.',
+        });
+        return;
+      }
       if (err.name === 'CastError') {
         res.status(CAST_ERR_CODE).send({ message: 'Пользователь по указанному _id не найден' });
         return;
