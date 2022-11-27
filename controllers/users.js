@@ -64,14 +64,6 @@ const createUser = (req, res) => {
     });
 };
 // орФейл ловит, если не найден ValidationError и DefaulError нужны
-
-// if (err.name === 'CastError') {
-//   res.status(400).send({ message: 'Передан невалидный id пользователя' });
-// } else if (err.statusCode === 404) {
-//   res.status(404).send({ message: err.message });
-// } else {
-//   res.status(500).send({ message: 'Произошла ошибка' });
-// }
 const patchUser = (req, res) => {
   const { user: { _id }, body } = req;
   User.findByIdAndUpdate(_id, body, { new: true, runValidators: true })
