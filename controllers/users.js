@@ -16,7 +16,6 @@ const getUsers = (req, res) => {
 
 // орфейл,
 const getUserById = (req, res) => {
-  console.log(req.params.userId);
   User.findById(req.params.userId)
     .orFail(() => {
       console.log('orFail');
@@ -30,12 +29,11 @@ const getUserById = (req, res) => {
       res.send({ user });
     })
     .catch((err) => {
-      console.log(err);
+      console.log(err.value.length);
       if (err.name === 'ValidationError'
       || (err.value && err.value.length !== 24)) { // валидация _id
-        err.status(VALID_ERR_CODE).send({
-          message:
-          'Переданы некорректные данные при создании пользователя.',
+        res.status(VALID_ERR_CODE).send({
+          message: 'Переданы некорректные данные при создании пользователя.',
         });
         return;
       }
