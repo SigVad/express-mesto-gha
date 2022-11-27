@@ -46,13 +46,13 @@ const deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError'
-      || (err.value && err.value.length !== 24)) { // валидация _id
+      || err.name === 'CastError') { // валидация _id
         res.status(VALID_ERR_CODE).send({
           message: 'Переданы некорректные данные при создании карточки.',
         });
         return;
       }
-      if (err.name === 'CastError' || err.name === 'Error') {
+      if (err.name === 'Error') {
         res.status(NOT_FOUND_CODE).send({ message: 'Карточка с указанным _id не найдена.' });
         return;
       }
@@ -73,11 +73,11 @@ const likeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError'
-      || (err.value && err.value.length !== 24)) { // валидация _id
+      || err.name === 'CastError') { // валидация _id
         res.status(VALID_ERR_CODE).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
         return;
       }
-      if (err.name === 'CastError' || err.name === 'Error') {
+      if (err.name === 'Error') {
         res.status(NOT_FOUND_CODE).send({ message: 'Передан несуществующий _id карточки' });
         return;
       }
@@ -99,11 +99,11 @@ const dislikeCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError'
-      || (err.value && err.value.length !== 24)) { // валидация _id
+      || err.name === 'CastError') { // валидация _id
         res.status(VALID_ERR_CODE).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
         return;
       }
-      if (err.name === 'CastError' || err.name === 'Error') {
+      if (err.name === 'Error') {
         res.status(NOT_FOUND_CODE).send({ message: 'Передан несуществующий _id карточки' });
         return;
       }

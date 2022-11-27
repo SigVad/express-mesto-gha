@@ -29,13 +29,13 @@ const getUserById = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError'
-      || (err.value && err.value.length !== 24)) { // валидация _id
+      || err.name === 'CastError') { // валидация _id
         res.status(VALID_ERR_CODE).send({
           message: 'Переданы некорректные данные при создании пользователя.',
         });
         return;
       }
-      if (err.name === 'CastError' || err.name === 'Error') {
+      if (err.name === 'Error') {
         res.status(NOT_FOUND_CODE).send({ message: 'Пользователь по указанному _id не найден' });
         return;
       }
@@ -70,11 +70,11 @@ const patchUser = (req, res) => {
     })
     .then((user) => res.send({ user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
         res.status(VALID_ERR_CODE).send({ message: 'Переданы некорректные данные при обновлении профиля' });
         return;
       }
-      if (err.name === 'CastError' || err.name === 'Error') {
+      if (err.name === 'Error') {
         res.status(NOT_FOUND_CODE).send({ message: 'Пользователь по указанному _id не найден' });
         return;
       }
