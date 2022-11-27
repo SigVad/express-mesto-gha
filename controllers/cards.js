@@ -72,8 +72,6 @@ const likeCard = (req, res) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      console.log(err.name);
-
       if (err.name === 'ValidationError'
       || (err.value && err.value.length !== 24)) { // валидация _id
         res.status(VALID_ERR_CODE).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });

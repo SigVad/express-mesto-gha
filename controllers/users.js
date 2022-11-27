@@ -18,7 +18,6 @@ const getUsers = (req, res) => {
 const getUserById = (req, res) => {
   User.findById(req.params.userId)
     .orFail(() => {
-      console.log('orFail');
       throw new Error();
     })
     .then((user) => {
@@ -29,7 +28,6 @@ const getUserById = (req, res) => {
       res.send({ user });
     })
     .catch((err) => {
-      //console.log(err.value.length);
       if (err.name === 'ValidationError'
       || (err.value && err.value.length !== 24)) { // валидация _id
         res.status(VALID_ERR_CODE).send({
@@ -74,8 +72,6 @@ const patchUser = (req, res) => {
     })
     .then((user) => res.send({ user }))
     .catch((err) => {
-      console.log(err.name);
-      console.log(err.statusCode);
       if (err.name === 'ValidationError') {
         res.status(VALID_ERR_CODE).send({ message: 'Переданы некорректные данные при обновлении профиля' });
         return;
