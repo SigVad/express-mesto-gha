@@ -13,11 +13,11 @@ const getUsers = (req, res) => {
       res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
     });
 };
-//орфейл
+// орфейл
 const getUserById = (req, res) => {
   User.findById(req.params.userId)
     .orFail(() => {
-      throw new NotFoundError('Пользователь по указанному _id не найден');
+      throw new Error('Пользователь по указанному _id не найден');
     })
     .then((user) => {
       res.send({ user });
@@ -32,7 +32,7 @@ const getUserById = (req, res) => {
     });
 };
 
-//ValidationError и DefaulError нужны
+// ValidationError и DefaulError нужны
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
@@ -50,13 +50,13 @@ const createUser = (req, res) => {
       res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
     });
 };
-//орФейл ловит, если не найден ValidationError и DefaulError нужны
+// орФейл ловит, если не найден ValidationError и DefaulError нужны
 const patchUser = (req, res) => {
   const { user: { _id }, body } = req;
   User.findByIdAndUpdate(_id, body, { new: true, runValidators: true })
     .orFail(() => {
-      res.status(CAST_ERR_CODE)
-      throw new NotFoundError('Пользователь по указанному _id не найден');
+      res.status(CAST_ERR_CODE);
+      throw new Error('Пользователь по указанному _id не найден');
     })
     .then((user) => res.send({ user }))
     .catch((err) => {
