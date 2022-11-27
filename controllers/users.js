@@ -29,7 +29,7 @@ const getUserById = (req, res) => {
       res.send({ user });
     })
     .catch((err) => {
-      console.log(err.value.length);
+      //console.log(err.value.length);
       if (err.name === 'ValidationError'
       || (err.value && err.value.length !== 24)) { // валидация _id
         res.status(VALID_ERR_CODE).send({
