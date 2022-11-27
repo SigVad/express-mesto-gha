@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path');
 const bodyParser = require('body-parser'); // Сборка пакетов
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
@@ -23,8 +22,6 @@ app.use((req, res, next) => {
   };
   next();
 });
-
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', usersRouter);
 app.use('/', cardsRouter);
