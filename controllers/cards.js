@@ -49,9 +49,8 @@ const createCard = (req, res) => {
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(() => {
-      const error = new Error('Пользователь по указанному _idaaa не найден');
-      error.status(666);
-      throw error;
+      console.log('orFail');
+      throw new Error();
     })
     .then((card) => {
       if (card.owner.toString() === req.user._id) {
@@ -63,7 +62,7 @@ const deleteCard = (req, res) => {
       }
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'CastError' || err.name === 'Error') {
         res.status(NOT_FOUND_CODE).send({ message: 'Карточка с указанным _id не найдена.' });
         return;
       }
