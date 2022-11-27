@@ -65,9 +65,9 @@ const createUser = (req, res) => {
 const patchUser = (req, res) => {
   const { user: { _id }, body } = req;
   User.findByIdAndUpdate(_id, body, { new: true, runValidators: true })
-  .orFail(() => {
-    throw new Error();
-  })
+    .orFail(() => {
+      throw new Error();
+    })
     .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
