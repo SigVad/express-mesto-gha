@@ -1,68 +1,74 @@
 const User = require('../models/user');
 
-const OK_CODE = 200;
-const OK_CREATED_CODE = 201;
-const ERROR_BAD_REQUEST_CODE = 400;
-const ERROR_NOT_FOUND_CODE = 404;
-const ERROR_INTERNAL_SERVER_CODE = 500;
+const VALID_ERR_CODE = 400;
+const CAST_ERR_CODE = 404;
+const DEFAULT_ERR_CODE = 500;
 
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => {
-      res.status(OK_CODE).send({ data: users });
+      res.send({ users });
     })
     .catch(() => {
-      res.status(ERROR_INTERNAL_SERVER_CODE).send({ message: 'На сервере произошла ошибка' });
+      res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
     });
 };
-
+//орфейл
 const getUserById = (req, res) => {
   User.findById(req.params.userId)
+    .orFail(() => {
+      throw new NotFoundError('Пользователь по указанному _id не найден');
+    })
     .then((user) => {
-      res.status(OK_CODE).send({ data: user });
+      res.send({ user });
     })
     .catch((err) => {
+      console.log(err);
       if (err.name === 'CastError') {
-        res.status(ERROR_NOT_FOUND_CODE).send({ message: 'Пользователь по указанному _id не найден' });
+        res.status(CAST_ERR_CODE).send({ message: 'Пользователь по указанному _id не найден' });
         return;
       }
-      res.status(ERROR_INTERNAL_SERVER_CODE).send({ message: 'На сервере произошла ошибка' });
+      res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
+//ValidationError и DefaulError нужны
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-
   User.create({ name, about, avatar })
     .then((user) => {
-      res.status(OK_CREATED_CODE).send({ data: user });
+      res.send({ user });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(ERROR_BAD_REQUEST_CODE).send({
+        res.status(VALID_ERR_CODE).send({
           message:
           'Переданы некорректные данные при создании пользователя.',
         });
         return;
       }
-      res.status(ERROR_INTERNAL_SERVER_CODE).send({ message: 'На сервере произошла ошибка' });
+      res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
     });
 };
-
+//орФейл ловит, если не найден ValidationError и DefaulError нужны
 const patchUser = (req, res) => {
   const { user: { _id }, body } = req;
   User.findByIdAndUpdate(_id, body, { new: true, runValidators: true })
-    .then((user) => res.status(OK_CODE).send({ data: user }))
+    .orFail(() => {
+      res.status(CAST_ERR_CODE)
+      throw new NotFoundError('Пользователь по указанному _id не найден');
+    })
+    .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(ERROR_BAD_REQUEST_CODE).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+        res.status(VALID_ERR_CODE).send({ message: 'Переданы некорректные данные при обновлении профиля' });
         return;
       }
-      if (err.name === 'CastError') {
-        res.status(ERROR_NOT_FOUND_CODE).send({ message: 'Пользователь по указанному _id не найден' });
+      if (res.statusCode === 404) {
+        res.status(CAST_ERR_CODE).send({ message: 'Пользователь по указанному _id не найден' });
         return;
       }
-      res.status(ERROR_INTERNAL_SERVER_CODE).send({ message: 'На сервере произошла ошибка' });
+      res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
