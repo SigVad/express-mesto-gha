@@ -13,7 +13,7 @@ const getCards = (req, res) => {
       res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
     });
 };
-// ValidationError и DefaulError нужны
+
 const createCard = (req, res) => {
   const owner = req.user._id;
   const { name, link } = req.body;
@@ -24,8 +24,7 @@ const createCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(VALID_ERR_CODE).send({
-          message:
-          'Переданы некорректные данные при создании карточки.',
+          message: 'Переданы некорректные данные при создании карточки.',
         });
         return;
       }
@@ -33,35 +32,26 @@ const createCard = (req, res) => {
     });
 };
 
-// const deleteCard = (req, res) => {
-//   Card.findByIdAndRemove(req.params.cardId)
-//     .then((card) => {
-//       res.send({ data: card });
-//     })
-//     .catch((err) => {
-//       if (err.name === 'CastError') {
-//         res.status(NOT_FOUND_CODE).send({ message: 'Карточка с указанным _id не найдена.' });
-//         return;
-//       }
-//       res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
-//     });
-// };
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .orFail(() => {
-      console.log('orFail');
       throw new Error();
     })
     .then((card) => {
       if (card.owner.toString() === req.user._id) {
         res.send({ data: card });
-      } else {
-        const error = new Error('Пользователь по указанному _idaaa не найден');
-        error.status(666);
-        throw error;
+        return;
       }
+      throw new Error();
     })
     .catch((err) => {
+      if (err.name === 'ValidationError'
+      || (err.value && err.value.length !== 24)) { // валидация _id
+        res.status(VALID_ERR_CODE).send({
+          message: 'Переданы некорректные данные при создании карточки.',
+        });
+        return;
+      }
       if (err.name === 'CastError' || err.name === 'Error') {
         res.status(NOT_FOUND_CODE).send({ message: 'Карточка с указанным _id не найдена.' });
         return;
@@ -76,7 +66,6 @@ const likeCard = (req, res) => {
     { new: true },
   )
     .orFail(() => {
-      console.log('orFail');
       throw new Error();
     })
     .then((card) => {
@@ -85,7 +74,8 @@ const likeCard = (req, res) => {
     .catch((err) => {
       console.log(err.name);
 
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError'
+      || (err.value && err.value.length !== 24)) { // валидация _id
         res.status(VALID_ERR_CODE).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
         return;
       }
@@ -104,14 +94,14 @@ const dislikeCard = (req, res) => {
     { new: true },
   )
     .orFail(() => {
-      console.log('orFail');
       throw new Error();
     })
     .then((card) => {
       res.send({ data: card });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError'
+      || (err.value && err.value.length !== 24)) { // валидация _id
         res.status(VALID_ERR_CODE).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
         return;
       }

@@ -31,7 +31,8 @@ const getUserById = (req, res) => {
     })
     .catch((err) => {
       console.log(err);
-      if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError'
+      || (err.value && err.value.length !== 24)) { // валидация _id
         err.status(VALID_ERR_CODE).send({
           message:
           'Переданы некорректные данные при создании пользователя.',
