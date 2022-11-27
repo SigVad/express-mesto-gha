@@ -61,22 +61,20 @@ const createUser = (req, res) => {
       res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
     });
 };
-// орФейл ловит, если не найден ValidationError и DefaulError нужны
+
 const patchUser = (req, res) => {
   const { user: { _id }, body } = req;
   User.findByIdAndUpdate(_id, body, { new: true, runValidators: true })
-    .orFail(() => {
-      const error = new Error('Пользователь по указанному _id не найден');
-      error.status(NOT_FOUND_CODE);
-      throw error;
-    })
+  .orFail(() => {
+    throw new Error();
+  })
     .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(VALID_ERR_CODE).send({ message: 'Переданы некорректные данные при обновлении профиля' });
         return;
       }
-      if (err.statusCode === 404) {
+      if (err.name === 'CastError' || err.name === 'Error') {
         res.status(NOT_FOUND_CODE).send({ message: 'Пользователь по указанному _id не найден' });
         return;
       }
