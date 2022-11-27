@@ -25,9 +25,11 @@ const getUserById = (req, res) => {
     //   throw new Error('Пользователь по указанному _id не найден');
     // })
     .then((user) => {
-      //проверяем, есть ли юзер с таким ид
-      if(!user) {
-        throw new Error('Пользователь по указанному _id не найден');
+      // проверяем, есть ли юзер с таким ид
+      if (!user) {
+        const error = new Error('Пользователь по указанному _idaaa не найден');
+        error.status(666);
+        throw error;
       }
       res.send({ user });
     })
