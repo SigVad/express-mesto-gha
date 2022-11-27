@@ -14,37 +14,31 @@ const getUsers = (req, res) => {
     });
 };
 
-// орфейл
+// орфейл,
 const getUserById = (req, res) => {
   console.log(req.params.userId);
   User.findById(req.params.userId)
-    // .orFail(() => {
-    //   console.log('orFail');
-    //   console.log(res.statusCode);
-    //   res.status(CAST_ERR_CODE);
-    //   console.log(res.statusCode);
-    //   throw new Error('Пользователь по указанному _id не найден');
-    // })
+    .orFail(() => {
+      console.log('orFail');
+      throw new Error();
+    })
     .then((user) => {
       // проверяем, есть ли юзер с таким ид
-      if (!user) {
-        const error = new Error('Пользователь по указанному _idaaa не найден');
-        error.status(666);
-        throw error;
-      }
+      // if (!user) {
+      //   throw new Error('Переданы некорректные данные при создании пользователя.');
+      // }
       res.send({ user });
     })
     .catch((err) => {
-      console.log(err.name);
       console.log(err);
       if (err.name === 'ValidationError') {
-        res.status(VALID_ERR_CODE).send({
+        err.status(VALID_ERR_CODE).send({
           message:
           'Переданы некорректные данные при создании пользователя.',
         });
         return;
       }
-      if (err.name === 'CastError') {
+      if (err.name === 'CastError' || err.name === 'Error') {
         res.status(CAST_ERR_CODE).send({ message: 'Пользователь по указанному _id не найден' });
         return;
       }

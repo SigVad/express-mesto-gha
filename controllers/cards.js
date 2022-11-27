@@ -76,16 +76,21 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
+    .orFail(() => {
+      console.log('orFail');
+      throw new Error();
+    })
     .then((card) => {
       res.send({ data: card });
     })
     .catch((err) => {
       console.log(err.name);
+
       if (err.name === 'ValidationError') {
         res.status(VALID_ERR_CODE).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
         return;
       }
-      if (err.name === 'CastError') {
+      if (err.name === 'CastError' || err.name === 'Error') {
         res.status(CAST_ERR_CODE).send({ message: 'Передан несуществующий _id карточки' });
         return;
       }
@@ -99,6 +104,10 @@ const dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
+    .orFail(() => {
+      console.log('orFail');
+      throw new Error();
+    })
     .then((card) => {
       res.send({ data: card });
     })
@@ -107,7 +116,7 @@ const dislikeCard = (req, res) => {
         res.status(VALID_ERR_CODE).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
         return;
       }
-      if (err.name === 'CastError') {
+      if (err.name === 'CastError' || err.name === 'Error') {
         res.status(CAST_ERR_CODE).send({ message: 'Передан несуществующий _id карточки' });
         return;
       }
