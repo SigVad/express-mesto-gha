@@ -6,19 +6,10 @@ const DEFAULT_ERR_CODE = 500;
 
 const getUsers = (req, res) => {
   User.find({})
-    .orFail(() => {
-      const error = new Error();
-      error.name = 'UserNotFound';
-      throw error;
-    })
     .then((users) => {
       res.send({ users });
     })
-    .catch((err) => {
-      if (err.name === 'UserNotFound') {
-        res.status(CAST_ERR_CODE).send({ message: 'Пользователь по указанному _id не найден' });
-        return;
-      }
+    .catch(() => {
       res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
     });
 };
@@ -34,6 +25,10 @@ const getUserById = (req, res) => {
     //   throw new Error('Пользователь по указанному _id не найден');
     // })
     .then((user) => {
+      //проверяем, есть ли юзер с таким ид
+      if(!user) {
+        throw new Error('Пользователь по указанному _id не найден');
+      }
       res.send({ user });
     })
     .catch((err) => {
