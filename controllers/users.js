@@ -29,6 +29,7 @@ const getUserById = (req, res) => {
     })
     .catch((err) => {
       console.log(err.name);
+      console.log(err);
       if (err.name === 'ValidationError') {
         res.status(VALID_ERR_CODE).send({
           message:
@@ -71,18 +72,6 @@ const createUser = (req, res) => {
 // } else {
 //   res.status(500).send({ message: 'Произошла ошибка' });
 // }
-
-// if (err.name === 'ValidationError') {
-//   res.status(VALID_ERR_CODE).send({
-// message: 'Переданы некорректные данные при обновлении профиля' });
-//   return;
-// }
-// if (res.statusCode === 404) {
-//   res.status(CAST_ERR_CODE).send({ message: 'Пользователь по указанному _id не найден' });
-//   return;
-// }
-// res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
-
 const patchUser = (req, res) => {
   const { user: { _id }, body } = req;
   User.findByIdAndUpdate(_id, body, { new: true, runValidators: true })
@@ -93,12 +82,13 @@ const patchUser = (req, res) => {
     })
     .then((user) => res.send({ user }))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(CAST_ERR_CODE).send({ message: 'Пользователь по указанному _id не найден' });
+      console.log(err.statusCode);
+      if (err.name === 'ValidationError') {
+        res.status(VALID_ERR_CODE).send({ message: 'Переданы некорректные данные при обновлении профиля' });
         return;
       }
-      if (err.statusCode === 404) {
-        res.status(VALID_ERR_CODE).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+      if (res.statusCode === 404) {
+        res.status(CAST_ERR_CODE).send({ message: 'Пользователь по указанному _id не найден' });
         return;
       }
       res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
