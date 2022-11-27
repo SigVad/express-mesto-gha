@@ -16,7 +16,8 @@ const getUsers = (req, res) => {
 
 // орфейл
 const getUserById = (req, res) => {
-  User.findById(req.params.userId, { runValidators: true })
+  console.log(req.params.userId);
+  User.findById(req.params.userId)
     // .orFail(() => {
     //   console.log('orFail');
     //   console.log(res.statusCode);
