@@ -1,7 +1,7 @@
 const User = require('../models/user');
 
 const VALID_ERR_CODE = 400;
-const CAST_ERR_CODE = 404;
+const NOT_FOUND_CODE = 404;
 const DEFAULT_ERR_CODE = 500;
 
 const getUsers = (req, res) => {
@@ -39,7 +39,7 @@ const getUserById = (req, res) => {
         return;
       }
       if (err.name === 'CastError' || err.name === 'Error') {
-        res.status(CAST_ERR_CODE).send({ message: 'Пользователь по указанному _id не найден' });
+        res.status(NOT_FOUND_CODE).send({ message: 'Пользователь по указанному _id не найден' });
         return;
       }
       res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
@@ -70,7 +70,7 @@ const patchUser = (req, res) => {
   User.findByIdAndUpdate(_id, body, { new: true, runValidators: true })
     .orFail(() => {
       const error = new Error('Пользователь по указанному _id не найден');
-      error.status(CAST_ERR_CODE);
+      error.status(NOT_FOUND_CODE);
       throw error;
     })
     .then((user) => res.send({ user }))
@@ -82,7 +82,7 @@ const patchUser = (req, res) => {
         return;
       }
       if (err.statusCode === 404) {
-        res.status(CAST_ERR_CODE).send({ message: 'Пользователь по указанному _id не найден' });
+        res.status(NOT_FOUND_CODE).send({ message: 'Пользователь по указанному _id не найден' });
         return;
       }
       res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });

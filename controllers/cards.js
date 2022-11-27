@@ -1,7 +1,7 @@
 const Card = require('../models/card');
 
 const VALID_ERR_CODE = 400;
-const CAST_ERR_CODE = 404;
+const NOT_FOUND_CODE = 404;
 const DEFAULT_ERR_CODE = 500;
 
 const getCards = (req, res) => {
@@ -40,7 +40,7 @@ const createCard = (req, res) => {
 //     })
 //     .catch((err) => {
 //       if (err.name === 'CastError') {
-//         res.status(CAST_ERR_CODE).send({ message: 'Карточка с указанным _id не найдена.' });
+//         res.status(NOT_FOUND_CODE).send({ message: 'Карточка с указанным _id не найдена.' });
 //         return;
 //       }
 //       res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
@@ -64,7 +64,7 @@ const deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(CAST_ERR_CODE).send({ message: 'Карточка с указанным _id не найдена.' });
+        res.status(NOT_FOUND_CODE).send({ message: 'Карточка с указанным _id не найдена.' });
         return;
       }
       res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
@@ -91,7 +91,7 @@ const likeCard = (req, res) => {
         return;
       }
       if (err.name === 'CastError' || err.name === 'Error') {
-        res.status(CAST_ERR_CODE).send({ message: 'Передан несуществующий _id карточки' });
+        res.status(NOT_FOUND_CODE).send({ message: 'Передан несуществующий _id карточки' });
         return;
       }
       res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
@@ -117,7 +117,7 @@ const dislikeCard = (req, res) => {
         return;
       }
       if (err.name === 'CastError' || err.name === 'Error') {
-        res.status(CAST_ERR_CODE).send({ message: 'Передан несуществующий _id карточки' });
+        res.status(NOT_FOUND_CODE).send({ message: 'Передан несуществующий _id карточки' });
         return;
       }
       res.status(DEFAULT_ERR_CODE).send({ message: 'На сервере произошла ошибка' });
