@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 
 const {
-  getUsers, getUserById, createUser, patchUser, getCurrentUser
+  getUsers, getUserById, createUser, patchUser, getCurrentUser,
 } = require('../controllers/users');
 
 // возвращает всех пользователей
@@ -11,7 +11,7 @@ router.get('/users', getUsers);
 
 router.post('/users', createUser);
 
- // возвращает пользователя по _id
+// возвращает пользователя по _id
 router.get('/users/:userId', celebrate({
   params: Joi.object().keys({
     userId: Joi.string().hex().length(24),
