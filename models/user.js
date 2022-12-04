@@ -1,22 +1,46 @@
 const mongoose = require('mongoose');
+const isEmail = require('validator/lib/isEmail');
+const validator = require('validator');
+
 // схема
 const userSchema = new mongoose.Schema({
-  name: { // имя пользователя, строка от 2 до 30 символов, обязательное поле;
+  name: { // имя
     type: String,
     required: true,
     minlength: 2,
     maxlength: 30,
+    default: 'Жак-Ив Кусто',
   },
-  about: { // информация о пользователе, строка от 2 до 30 символов, обязательное поле;
+  about: { // информация
     type: String,
     required: true,
     minlength: 2,
     maxlength: 30,
+    default: 'Исследователь',
   },
-  avatar: { // ссылка на аватарку, строка, обязательное поле.
+  avatar: { // аватарка
     type: String,
     required: true,
+    validate: {
+      validator: (avatar) => validator.isURL(avatar),
+      message: 'Некорректная ссылка',
+    },
+    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
 
+  },
+  email: { // почта
+    type: String,
+    required: true,
+    unique: true,
+    validate: {
+      validator: (email) => isEmail(email),
+      message: 'Некорректный Email',
+    },
+  },
+  password: { // пароль
+    type: String,
+    required: true,
+    select: false, // чтобы API не возвращал хеш пароля
   },
 });
 
