@@ -11,13 +11,6 @@ router.get('/users', getUsers);
 
 router.post('/users', createUser);
 
-// возвращает пользователя по _id
-router.get('/users/:userId', celebrate({
-  params: Joi.object().keys({
-    userId: Joi.string().hex().length(24),
-  }),
-}), getUserById);
-
 // возвращает информацию о текущем  пользователе
 router.get('/users/me', getCurrentUser);
 // обновляет профиль
@@ -35,6 +28,13 @@ router.patch('/users/me/avatar', celebrate({
     avatar: Joi.string().regex(/https?:\/\/(\w{3}\.)?[1-9a-z\-.]{1,}\.\w{2,}(\/[1-90a-z-._~:?#[@!$&'()*+,;=]{1,}\/?)?#?/i),
   }),
 }), patchUser);
+
+// возвращает пользователя по _id
+router.get('/users/:userId', celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().hex().length(24),
+  }),
+}), getUserById);
 
 // router.post('/users/me', login);
 
