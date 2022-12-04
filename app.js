@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser'); // Сборка пакетов
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi } = require('celebrate');
-const { errors } = require('celebrate');
+// const { errors } = require('celebrate');
 
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
@@ -38,7 +38,7 @@ app.post('/signup', celebrate({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().uri().regex(
-      /https?:\/\/(\w{3}\.)?[1-9a-z\-.]{1,}\.\w{2,}(\/[1-90a-z\-._~:?#[@!$&'()*+,;=]{1,}\/?)?#?/i,
+      /https?:\/\/(\w{3}\.)?[1-9a-z\-.]{1,}\.\w{2,}(\/[1-90a-z-._~:?#[@!$&'()*+,;=]{1,}\/?)?#?/i,
     ),
   }),
 }), createUser);
@@ -47,11 +47,10 @@ app.use('/', auth, usersRouter); // auth - защита авторизацией
 app.use('/', auth, cardsRouter);
 
 app.use('*', (req, res, next) => {
-  // res.status(404).send({ message: 'Страница не найдена' });
   next(new NotFoundErr('Страница не найдена'));
 });
 
-app.use(errors());
+// app.use(errors());
 app.use(defaultError); // обработать ошибку сервера
 
 app.listen(PORT);

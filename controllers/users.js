@@ -14,6 +14,22 @@ const getUsers = (req, res, next) => {
 };
 
 const getUserById = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail(() => {
+      next(new NotFoundErr('Пользователь по указанному _id не найден'));
+    })
+    .then((user) => {
+      res.send({ user });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new BadRequestErr('Переданы некорректные данные при создании пользователя.'));
+      }
+      next(err);
+    });
+};
+
+const getCurrentUser = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(() => {
       next(new NotFoundErr('Пользователь по указанному _id не найден'));
@@ -106,5 +122,5 @@ const login = (req, res, next) => {
 */
 
 module.exports = {
-  getUsers, getUserById, createUser, patchUser, login,
+  getUsers, getUserById, createUser, patchUser, login, getCurrentUser,
 };
