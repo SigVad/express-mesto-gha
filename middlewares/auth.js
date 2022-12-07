@@ -2,21 +2,22 @@ const jwt = require('jsonwebtoken');
 const UnauthorizedErr = require('../errors/UnauthorizedErr');
 
 // мидлвэр для авторизации
-module.exports.auth = (req, res, next) => {
-  const { authorization } = req.headers;
+const auth = (req, res, next) => {
+  const token = req.cookies.access_token;
 
-  if (!authorization || !authorization.startWith('Bearer')) {
-    throw new UnauthorizedErr('Необходима авторизация'); // 401
+  if (!token) {
+    next(new UnauthorizedErr('Необходима авторизация')); // 401
   }
-  const token = authorization.replace('Bearer ', '');
   let payload;
+
   try {
     // верифицировать токен из заголовков
     payload = jwt.verify(token, 'some-secret-key');
   } catch (err) {
-    throw new UnauthorizedErr('Необходима авторизация');
+    next(UnauthorizedErr('Необходима авторизация'));
   }
   // добавить пейлоуд токена в объект запроса
   req.user = payload;
   next();
 };
+module.exports = { auth };
