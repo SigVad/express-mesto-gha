@@ -46,7 +46,7 @@ const getUserById = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
- // console.log('createUser');
+  // console.log('createUser');
   const {
     name, about, avatar, email, password,
   } = req.body;

@@ -11,7 +11,7 @@ const cardsRouter = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const { auth } = require('./middlewares/auth');
 // const defaultError = require('./middlewares/defaultError');
-const { NotFoundErr } = require('./errors/NotFoundErr');
+const NotFoundErr = require('./errors/NotFoundErr');
 
 const { PORT = 3000 } = process.env;
 const app = express();
