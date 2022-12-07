@@ -19,29 +19,34 @@ const createCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestErr('Переданы некорректные данные при создании карточки.'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
 const deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .orFail(() => {
       throw new NotFoundErr('Карточка с указанным _id не найдена.');
     })
     .then((card) => {
-      if (card.owner.toString() === req.user._id) {
-        res.send({ message: 'Карточка удалена' });
-        return;
+      if (card.owner.toString() !== req.user._id) {
+        throw new ForbiddenErr('Недостаточно прав для удаления карточки');
       }
-      throw next(new ForbiddenErr('Недостаточно прав для удаления карточки'));
+      Card.findByIdAndRemove(req.params.cardId)
+        .then(() => {
+          res.send({ message: 'Карточка удалена' });
+        })
+        .catch((err) => {
+          if (err.name === 'ValidationError' || err.name === 'CastError') {
+            next(new BadRequestErr('Переданы некорректные данные при создании карточки.'));
+          } else {
+            next(err);
+          }
+        });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new BadRequestErr('Переданы некорректные данные при создании карточки.'));
-      }
-      next(err);
-    });
+    .catch((err) => next(err));
 };
 
 const likeCard = (req, res, next) => {
@@ -59,8 +64,9 @@ const likeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestErr('Переданы некорректные данные при создании карточки.'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -79,8 +85,9 @@ const dislikeCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestErr('Переданы некорректные данные при создании карточки.'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 

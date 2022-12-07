@@ -7,6 +7,7 @@ const auth = (req, res, next) => {
 
   if (!token) {
     next(new UnauthorizedErr('Необходима авторизация')); // 401
+    return;
   }
   let payload;
 
@@ -15,6 +16,7 @@ const auth = (req, res, next) => {
     payload = jwt.verify(token, 'secret-code');
   } catch (err) {
     next(new UnauthorizedErr('Необходима авторизация'));
+    return;
   }
   // добавить пейлоуд токена в объект запроса
   req.user = payload;

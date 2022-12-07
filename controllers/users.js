@@ -16,7 +16,7 @@ const getUsers = (req, res, next) => {
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
-      next(new NotFoundErr('Пользователь по указанному _id не найден'));
+      throw new NotFoundErr('Пользователь по указанному _id не найден');
     })
     .then((user) => {
       res.send({ user });
@@ -24,15 +24,16 @@ const getCurrentUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestErr('Переданы некорректные данные'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
 const getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail(() => {
-      next(new NotFoundErr('Пользователь по указанному _id не найден'));
+      throw new NotFoundErr('Пользователь по указанному _id не найден');
     })
     .then((user) => {
       res.send({ user });
@@ -40,8 +41,9 @@ const getUserById = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestErr('Переданы некорректные данные пользователя'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -67,11 +69,13 @@ const createUser = (req, res, next) => {
       // попытка создать дубликат уникального поля.
       if (err.code === 11000) {
         next(new ConflictErr('Пользователь уже существует'));
+        return;
       }
       if (err.name === 'ValidationError') {
         next(new BadRequestErr('Переданы некорректные данные пользователя'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -79,14 +83,15 @@ const patchUser = (req, res, next) => {
   const { user: { _id }, body } = req;
   User.findByIdAndUpdate(_id, body, { new: true, runValidators: true })
     .orFail(() => {
-      next(new NotFoundErr('Пользователь по указанному _id не найден'));
+      throw new NotFoundErr('Пользователь по указанному _id не найден');
     })
     .then((user) => res.send({ user }))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         next(new BadRequestErr('Переданы некорректные данные пользователя'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -95,10 +100,6 @@ const login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        next(new NotFoundErr('Некорректный Email или пароль'));
-      }
-
       const token = jwt.sign({ _id: user._id }, 'secret-code', { expiresIn: '7d' });
       res
         .cookie('access_token', token, { httpOnly: true })
