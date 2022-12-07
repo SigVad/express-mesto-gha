@@ -42,8 +42,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// проверка почты на уровне схемы
-userSchema.statics.findUserByCredentials = function (email, password) {
+function findUserByCredentialsFunc(email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
@@ -57,7 +56,10 @@ userSchema.statics.findUserByCredentials = function (email, password) {
           return user;
         });
     });
-};
+}
+
+// проверка почты на уровне схемы
+userSchema.statics.findUserByCredentials = findUserByCredentialsFunc;
 
 // модель
 module.exports = mongoose.model('user', userSchema);

@@ -64,7 +64,6 @@ const createUser = (req, res, next) => {
       res.send(userData);
     })
     .catch((err) => {
-      console.log(err.name);
       // попытка создать дубликат уникального поля.
       if (err.code === 11000) {
         next(new ConflictErr('Пользователь уже существует'));
@@ -96,7 +95,6 @@ const login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      console.log(user);
       if (!user) {
         next(new NotFoundErr('Некорректный Email или пароль'));
       }
