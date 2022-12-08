@@ -22,7 +22,7 @@ const getCurrentUser = (req, res, next) => {
       res.send({ user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'CastError') {
         next(new BadRequestErr('Переданы некорректные данные'));
       } else {
         next(err);
@@ -39,8 +39,8 @@ const getUserById = (req, res, next) => {
       res.send({ user });
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new BadRequestErr('Переданы некорректные данные пользователя'));
+      if (err.name === 'CastError') { // обработать данные, полученные из БД
+        next(new BadRequestErr('Переданы некорректные данные'));
       } else {
         next(err);
       }
@@ -48,7 +48,6 @@ const getUserById = (req, res, next) => {
 };
 
 const createUser = (req, res, next) => {
-  // console.log('createUser');
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -87,7 +86,7 @@ const patchUser = (req, res, next) => {
     })
     .then((user) => res.send({ user }))
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError') { // записываем в БД, проверка по схеме
         next(new BadRequestErr('Переданы некорректные данные пользователя'));
       } else {
         next(err);
