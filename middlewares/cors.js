@@ -16,12 +16,11 @@ const cors = (req, res, next) => {
   const requestHeaders = req.headers['access-control-request-headers']; // список заголовков запроса
 
   // заголовок, который разрешает браузеру запросы из любого источника
-  //res.header('Access-Control-Allow-Origin', '*');
+  // res.header('Access-Control-Allow-Origin', '*');
 
-  //проверяем, что источник запроса есть среди разрешённых
+  // проверяем, что источник запроса есть среди разрешённых
   if (allowedCors.includes(origin)) {
-
-  //console.log('yes');
+  // console.log('yes');
     // разрешаем браузеру запросы с этого источника
     res.header('Access-Control-Allow-Origin', origin);
     res.header('Access-Control-Allow-Credentials', true);
@@ -33,7 +32,7 @@ const cors = (req, res, next) => {
     // завершаем обработку запроса и возвращаем результат клиенту
     return res.end();
   }
-  next();
+  return next();
 };
 
 module.exports = { cors };

@@ -35,7 +35,7 @@ router.use(auth); // защита авторизацией
 router.use('/', usersRouter);
 router.use('/', cardsRouter);
 
-routes.get('/logout', (req, res) => {
+router.get('/logout', (req, res) => {
   res.clearCookie('access_token').send({ message: 'Выход' });
 });
 

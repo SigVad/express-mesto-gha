@@ -4,7 +4,7 @@ const UnauthorizedErr = require('../errors/UnauthorizedErr');
 // мидлвэр для авторизации
 const auth = (req, res, next) => {
   const token = req.cookies.access_token;
-  //console.log(req.cookies);
+  // console.log(req.cookies);
 
   if (!token) {
     next(new UnauthorizedErr('Необходима авторизация')); // 401
