@@ -2,6 +2,8 @@
 const allowedCors = [
   'https://praktikum.tk',
   'http://praktikum.tk',
+  'http://sigvad.students.nomoredomains.club',
+  'https://sigvad.students.nomoredomains.club',
   'http://localhost:3001',
   'https://localhost:3001',
 ];
