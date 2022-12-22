@@ -99,7 +99,12 @@ const login = (req, res, next) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'secret-code', { expiresIn: '7d' });
+      const secretKey = process.env.NODE_ENV === 'production' ? process.env.JWT_SECRET : 'secret-code';
+      const token = jwt.sign(
+        { _id: user._id },
+        secretKey,
+        { expiresIn: '7d' },
+      );
       res
         .cookie('access_token', token, {
           maxAge: 604800000,

@@ -10,6 +10,13 @@ const defaultError = require('../middlewares/defaultError');
 const { requestLogger, errorLogger } = require('../middlewares/logger');
 
 router.use(requestLogger); // подключаем логгер запросов
+
+router.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
+
 router.post(
   '/signup',
   celebrate({
@@ -32,12 +39,11 @@ router.post('/signin', celebrate({
 }), login);
 
 router.use(auth); // защита авторизацией
-router.use('/', usersRouter);
-router.use('/', cardsRouter);
-
-router.get('/logout', (req, res) => {
+router.post('/signout', (req, res) => {
   res.clearCookie('access_token').send({ message: 'Выход' });
 });
+router.use('/', usersRouter);
+router.use('/', cardsRouter);
 
 router.use('*', (req, res, next) => {
   next(new NotFoundErr('Страница не найдена'));
