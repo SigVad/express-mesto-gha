@@ -8,7 +8,7 @@ const ConflictErr = require('../errors/ConflictErr');
 const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => {
-      res.send({ users });
+      res.send(users);
     })
     .catch(next);
 };
@@ -19,7 +19,7 @@ const getCurrentUser = (req, res, next) => {
       throw new NotFoundErr('Пользователь по указанному _id не найден');
     })
     .then((user) => {
-      res.send({ user });
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -36,7 +36,7 @@ const getUserById = (req, res, next) => {
       throw new NotFoundErr('Пользователь по указанному _id не найден');
     })
     .then((user) => {
-      res.send({ user });
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') { // обработать данные, полученные из БД
@@ -84,7 +84,7 @@ const patchUser = (req, res, next) => {
     .orFail(() => {
       throw new NotFoundErr('Пользователь по указанному _id не найден');
     })
-    .then((user) => res.send({ user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') { // записываем в БД, проверка по схеме
         next(new BadRequestErr('Переданы некорректные данные пользователя'));
@@ -101,7 +101,12 @@ const login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'secret-code', { expiresIn: '7d' });
       res
-        .cookie('access_token', token, { httpOnly: true })
+        .cookie('access_token', token, {
+          maxAge: 604800000,
+          httpOnly: true,
+          secure: true,
+          sameSite: 'none',
+        })
         .send({ message: 'Аутентификация прошла успешно' });
     })
     .catch(next);
