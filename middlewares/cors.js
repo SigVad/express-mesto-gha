@@ -1,7 +1,5 @@
 // Массив доменов, с которых разрешены кросс-доменные запросы
 const allowedCors = [
-  'https://sigvad.students.nomoredomains.club',
-  'http://sigvad.students.nomoredomains.club',
   'https://praktikum.tk',
   'http://praktikum.tk',
   'http://localhost:3001',
@@ -20,15 +18,16 @@ const cors = (req, res, next) => {
 
   // проверяем, что источник запроса есть среди разрешённых
   if (allowedCors.includes(origin)) {
-  // console.log('yes');
     // разрешаем браузеру запросы с этого источника
     res.header('Access-Control-Allow-Origin', origin);
     res.header('Access-Control-Allow-Credentials', true);
   }
   // Если это предварительный запрос, добавляем нужные заголовки
   if (method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Headers', requestHeaders);
+    // разрешаем кросс-доменные запросы любых типов (по умолчанию)
     res.header('Access-Control-Allow-Methods', DEFAULT_ALLOWED_METHODS);
+    // разрешаем кросс-доменные запросы с этими заголовками
+    res.header('Access-Control-Allow-Headers', requestHeaders);
     // завершаем обработку запроса и возвращаем результат клиенту
     return res.end();
   }
